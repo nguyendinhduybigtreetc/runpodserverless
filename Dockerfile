@@ -26,4 +26,6 @@ RUN pip install -e .
 WORKDIR /workspace/Wan2GP
 
 # Lệnh sẽ chạy khi khởi động serverless (có thể override)
-CMD ["python", "wgp.py", "--help"]
+COPY . .
+
+CMD ["python", "runpod_serverless.py"]
