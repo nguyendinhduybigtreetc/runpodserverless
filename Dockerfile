@@ -1,14 +1,21 @@
 FROM runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
 
-# Cài đặt các công cụ cần thiết và ffmpeg từ PPA savoury1
+# Cài các gói hệ thống cần thiết
 RUN apt-get update && apt-get install -y \
     git \
     software-properties-common \
     && add-apt-repository ppa:savoury1/ffmpeg4 -y \
-    && apt-get update && apt-get install -y ffmpeg \
+    && apt-get update && apt-get install -y \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
     && apt-get clean
 
-# Làm việc trong thư mục chính
+# Set biến môi trường CUDA (cần thiết)
+ENV PATH=/usr/local/cuda/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+# Tạo thư mục làm việc
 WORKDIR /workspace
 
 # Clone và cài đặt Wan2GP
@@ -16,16 +23,14 @@ RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
 WORKDIR /workspace/Wan2GP
 RUN pip install -r requirements.txt
 
-# Clone và cài đặt SageAttention
+# Clone và cài SageAttention
 WORKDIR /workspace
 RUN git clone https://github.com/thu-ml/SageAttention.git
 WORKDIR /workspace/SageAttention
 RUN pip install -e .
 
-# Set working directory mặc định khi container khởi chạy
+# Trở lại thư mục chính
 WORKDIR /workspace/Wan2GP
 
-# Lệnh sẽ chạy khi khởi động serverless (có thể override)
-COPY . .
-
-CMD ["python", "runpod_serverless.py"]
+# Lệnh mặc định
+CMD ["python", "wgp.py", "--help"]
