@@ -22,10 +22,7 @@ RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
 WORKDIR /workspace/Wan2GP
 RUN pip install -r requirements.txt
 
-WORKDIR /workspace
-RUN git clone https://github.com/thu-ml/SageAttention.git
-WORKDIR /workspace/SageAttention
-RUN pip install -e .
+RUN pip install sageattention==1.0.6
 
 WORKDIR /workspace/Wan2GP
 
