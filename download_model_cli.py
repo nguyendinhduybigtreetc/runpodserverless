@@ -100,6 +100,7 @@ def download_hunyuan_avatar_model():
 
     # Hunyuan sử dụng LLaVA làm bộ mã hóa văn bản (text encoder)
     text_encoder_filename = "ckpts/llava-llama-3-8b/llava-llama-3-8b-v1_1_vlm_fp16.safetensors"
+    text_encoder_int8_filename = "ckpts/llava-llama-3-8b/llava-llama-3-8b-v1_1_vlm_quanto_int8.safetensors"
 
     hunyuan_def = {
         "repo_id": "DeepBeepMeep/HunyuanVideo",
@@ -107,7 +108,9 @@ def download_hunyuan_avatar_model():
         "file_list": [
             # 1. Text Encoder (LLaVA-Llama-3-8B)
             ["config.json", "special_tokens_map.json", "tokenizer.json", "tokenizer_config.json",
-             "preprocessor_config.json"] + compute_list_from_path(text_encoder_filename),
+             "preprocessor_config.json"]
+            + compute_list_from_path(text_encoder_filename)
+            + compute_list_from_path(text_encoder_int8_filename),
             # 2. Vision Encoder (CLIP-ViT-Large-Patch14)
             ["config.json", "merges.txt", "model.safetensors", "preprocessor_config.json", "special_tokens_map.json",
              "tokenizer.json", "tokenizer_config.json", "vocab.json"],
