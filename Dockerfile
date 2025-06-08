@@ -11,14 +11,15 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     && apt-get clean
 
-# Set biến môi trường CUDA (cần thiết)
-ENV PATH=/usr/local/cuda/bin:$PATH
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+# Set biến môi trường CUDA
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=$CUDA_HOME/bin:$PATH
+ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 
 # Tạo thư mục làm việc
 WORKDIR /workspace
 
-# Clone và cài đặt Wan2GP
+# Clone và cài Wan2GP
 RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
 WORKDIR /workspace/Wan2GP
 RUN pip install -r requirements.txt
