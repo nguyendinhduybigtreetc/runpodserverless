@@ -132,9 +132,12 @@ def initialize_model(args):
     wan_model._model_file_name = transformer_filename
 
     profile = args.profile
+    print(f"Profile: {profile}")
     budgets = {}
-    if profile in (2, 4, 5):
-        budgets = {"transformer": 100, "text_encoder": 100, "*": 3000}
+    if profile == 2:
+        budgets = {"transformer": "100%", "*": 3000}
+    elif profile in (4, 5):
+        budgets = {"transformer": 8000, "text_encoder": 100, "*": 3000}
     elif profile == 3:
         budgets = {"*": "70%"}
 
@@ -284,13 +287,13 @@ def main():
     perf_group = parser.add_argument_group('Performance Arguments')
     perf_group.add_argument("--quantization", type=str, default="int8", choices=["int8", "bf16"],
                             help="Model quantization.")
-    perf_group.add_argument("--dtype", type=str, default="", choices=["", "fp16", "bf16"],
+    perf_group.add_argument("--dtype", type=str, default="bf16", choices=["", "fp16", "bf16"],
                             help="Transformer data type (auto-detect).")
-    perf_group.add_argument("--attention", type=str, default="sdpa", choices=["sdpa", "sage", "sage2"],
+    perf_group.add_argument("--attention", type=str, default="sage2", choices=["sdpa", "sage", "sage2"],
                             help="Attention mechanism.")
-    perf_group.add_argument("--profile", type=int, default=4, choices=[1, 2, 3, 4, 5],
+    perf_group.add_argument("--profile", type=int, default=1, choices=[1, 2, 3, 4, 5],
                             help="Memory/VRAM usage profile (1-5).")
-    perf_group.add_argument("--vae_tiling_config", type=int, default=0, choices=[0, 1, 2, 3],
+    perf_group.add_argument("--vae_tiling_config", type=int, default=1, choices=[0, 1, 2, 3],
                             help="VAE Tiling config (0:Auto, 1:Off, 2:8GB+, 3:6GB+).")
     perf_group.add_argument("--vae_precision", type=str, default="16", choices=["16", "32"],
                             help="VAE precision (16/32 bit).")
