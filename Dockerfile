@@ -5,10 +5,6 @@ RUN apt-get add-apt-repository ppa:savoury1/ffmpeg4 -y \
     && apt-get update && apt-get install -y \
     ffmpeg \
 
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=$CUDA_HOME/bin:$PATH
-ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
-
 WORKDIR /workspace
 
 RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
