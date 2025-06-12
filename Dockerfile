@@ -16,9 +16,8 @@ WORKDIR /workspace/Wan2GP
 RUN pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu124
 RUN pip install -r requirements.txt
 
-RUN git clone https://github.com/thu-ml/SageAttention.git
-WORKDIR /workspace/Wan2GP/SageAttention
-RUN pip install .
+
+RUN pip install sageattention==1.0.6
 
 
 WORKDIR /workspace/Wan2GP
