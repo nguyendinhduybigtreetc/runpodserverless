@@ -24,7 +24,7 @@ RUN pip install -r requirements.txt
 
 RUN git clone https://github.com/thu-ml/SageAttention.git
 WORKDIR /workspace/Wan2GP/SageAttention
-RUN pip install .
+RUN CUDA_VISIBLE_DEVICES=0 pip install .
 
 
 WORKDIR /workspace/Wan2GP
