@@ -24,7 +24,7 @@ RUN pip install -r requirements.txt
 
 RUN git clone https://github.com/thu-ml/SageAttention.git
 WORKDIR /workspace/Wan2GP/SageAttention
-RUN CUDA_VISIBLE_DEVICES=0 pip install .
+RUN TORCH_CUDA_ARCH_LIST=Turing python setup.py install --user
 
 
 WORKDIR /workspace/Wan2GP
