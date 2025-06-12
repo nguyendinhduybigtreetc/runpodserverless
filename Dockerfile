@@ -20,8 +20,7 @@ WORKDIR /workspace
 
 RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
 WORKDIR /workspace/Wan2GP
-RUN # Install PyTorch 2.6.0 with CUDA 12.4
-pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu124
+RUN pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu124
 RUN pip install -r requirements.txt
 
 RUN git clone https://github.com/thu-ml/SageAttention.git
