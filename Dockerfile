@@ -11,6 +11,7 @@ RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
 WORKDIR /workspace/Wan2GP
 RUN pip install -r requirements.txt
 
+RUN nvidia-smi
 RUN git clone https://github.com/thu-ml/SageAttention.git
 WORKDIR /workspace/Wan2GP/SageAttention
 RUN TORCH_CUDA_ARCH_LIST=Turing python setup.py install --user
