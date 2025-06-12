@@ -1,16 +1,9 @@
 FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
 
 # Cài công cụ hệ thống, dev tool, CUDA env
-RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    software-properties-common \
-    && add-apt-repository ppa:savoury1/ffmpeg4 -y \
-    && apt-get update && apt-get install -y \
-    ffmpeg \
-    libsm6 \
-    libxext6 \
-    && apt-get clean
+RUN add-apt-repository ppa:savoury1/ffmpeg4 -y
+RUN apt-get update
+RUN apt-get install ffmpeg -y
 
 ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=$CUDA_HOME/bin:$PATH
