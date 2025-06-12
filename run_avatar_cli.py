@@ -135,7 +135,7 @@ def initialize_model(args):
     print(f"Profile: {profile}")
     budgets = {}
     if profile == 2:
-        budgets = {"transformer": "100%", "*": 3000}
+        budgets = {"text_encoder": 1, "*": "100%"}
     elif profile in (4, 5):
         budgets = {"transformer": 8000, "text_encoder": 100, "*": 3000}
     elif profile == 3:
@@ -170,7 +170,7 @@ def run_inference(wan_model, args):
     image_start = Image.open(image_path).convert('RGB')
     image_refs = [image_start]
 
-    width, height = 624, 832
+    width, height = 480, 640
     seed = args.seed if args.seed != -1 else np.random.randint(0, 999999999)
     fps = 25
 
@@ -234,11 +234,11 @@ def run_inference(wan_model, args):
     finally:
         progress_bar.close()
 
-    if samples is None or "x" not in samples:
+    if samples is None:
         print(f"ERROR: Generation failed. The model returned: {samples}")
         return
 
-    samples = samples["x"].to("cpu")
+    # samples = samples["x"].to("cpu")
 
     # Lưu kết quả
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -291,7 +291,7 @@ def main():
                             help="Transformer data type (auto-detect).")
     perf_group.add_argument("--attention", type=str, default="sage2", choices=["sdpa", "sage", "sage2"],
                             help="Attention mechanism.")
-    perf_group.add_argument("--profile", type=int, default=1, choices=[1, 2, 3, 4, 5],
+    perf_group.add_argument("--profile", type=int, default=2, choices=[1, 2, 3, 4, 5],
                             help="Memory/VRAM usage profile (1-5).")
     perf_group.add_argument("--vae_tiling_config", type=int, default=1, choices=[0, 1, 2, 3],
                             help="VAE Tiling config (0:Auto, 1:Off, 2:8GB+, 3:6GB+).")
