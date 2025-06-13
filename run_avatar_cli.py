@@ -17,6 +17,12 @@ from mmgp import offload, profile_type
 from wan.modules.attention import get_supported_attention_modes
 from wan.utils.utils import cache_video
 
+import uuid, requests, pathlib
+
+ACCESS_KEY = "17e23633-2a7a-4d29-9450be4d6c8e-e01f-45f4"
+unique_key = uuid.uuid4().hex
+
+
 # --- CÁC BIẾN TOÀN CỤC ---
 bfloat16_supported = torch.cuda.get_device_capability()[0] >= 8
 
@@ -105,13 +111,13 @@ def initialize_model(args):
     transformer_filename = get_model_filename(model_type, args.quantization, args.dtype)
     text_encoder_quantization = args.quantization
 
-    print("\n--- Model Configuration ---")
-    print(f"Transformer: {transformer_filename}")
-    print(f"Quantization: {args.quantization}")
-    print(f"Data Type: {args.dtype or 'auto'}")
-    print(f"Attention: {args.attention}")
-    print(f"VAE Tiling: {args.vae_tiling_config}")
-    print("---------------------------")
+    # print("\n--- Model Configuration ---")
+    # print(f"Transformer: {transformer_filename}")
+    # print(f"Quantization: {args.quantization}")
+    # print(f"Data Type: {args.dtype or 'auto'}")
+    # print(f"Attention: {args.attention}")
+    # print(f"VAE Tiling: {args.vae_tiling_config}")
+    # print("---------------------------")
 
     if not Path(transformer_filename).exists():
         print(f"ERROR: Model file not found at {transformer_filename}")
@@ -177,14 +183,14 @@ def run_inference(wan_model, args):
     audio_duration = librosa.get_duration(path=str(audio_path))
     video_length = min(int(fps * audio_duration // 4) * 4 + 5, 401)
 
-    print("\n--- Generation Parameters ---")
-    print(f"Resolution: {width}x{height}")
-    print(f"Video Length: {video_length} frames")
-    print(f"Steps: {args.steps}")
-    print(f"Seed: {seed}")
-    print(f"Guidance Scale: {args.guidance_scale}")
-    print(f"Flow Shift: {args.flow_shift}")
-    print("-----------------------------")
+    # print("\n--- Generation Parameters ---")
+    # print(f"Resolution: {width}x{height}")
+    # print(f"Video Length: {video_length} frames")
+    # print(f"Steps: {args.steps}")
+    # print(f"Seed: {seed}")
+    # print(f"Guidance Scale: {args.guidance_scale}")
+    # print(f"Flow Shift: {args.flow_shift}")
+    # print("-----------------------------")
 
     # <<< THAY ĐỔI: Sử dụng logic VAE Tiling từ wgp.py gốc
     device_mem_capacity = torch.cuda.get_device_properties(0).total_memory / 1048576
@@ -246,11 +252,11 @@ def run_inference(wan_model, args):
     temp_video_path = output_dir / f"{base_filename}_temp.mp4"
     final_video_path = output_dir / f"{base_filename}.mp4"
 
-    print(f"\nSaving temporary video to {temp_video_path}...")
+    # print(f"\nSaving temporary video to {temp_video_path}...")
     cache_video(tensor=samples[None], save_file=str(temp_video_path), fps=fps, nrow=1, normalize=True,
                 value_range=(-1, 1))
 
-    print(f"Combining video and audio into {final_video_path} using ffmpeg...")
+    # print(f"Combining video and audio into {final_video_path} using ffmpeg...")
     ffmpeg_command = ["ffmpeg", "-y", "-i", str(temp_video_path), "-i", str(audio_path),
                       "-c:v", "libx264", "-c:a", "aac", "-shortest",
                       "-loglevel", "warning", "-nostats", str(final_video_path)]
@@ -261,6 +267,22 @@ def run_inference(wan_model, args):
         print("\n--- Generation Complete! ---")
         print(f"Video saved to: {final_video_path}")
         print(f"Total time: {end_time - start_time:.2f} seconds.")
+        LOCAL_FILE = pathlib.Path(final_video_path)
+        url = f"https://storage.bunnycdn.com/zockto/video/{base_filename}.mp4"
+        with LOCAL_FILE.open("rb") as f:
+            r = requests.put(
+                url,
+                headers={
+                    "AccessKey": ACCESS_KEY,
+                    "Content-Type": "video/mp4"
+                },
+                data=f,  # stream theo chunk, không load hết vào RAM
+                timeout=1200  # tăng timeout nếu file lớn
+            )
+        # print(r.status_code, r.text)
+        print("CDN URL:", f"https://zockto.b-cdn.net/video/{unique_key}.mp4")
+
+
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("\nERROR: ffmpeg command failed. Ensure ffmpeg is installed.")
         print(f"Video (no audio) is at: {temp_video_path}")
