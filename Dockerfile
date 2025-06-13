@@ -14,6 +14,8 @@ WORKDIR /workspace
 RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
 COPY run_avatar_cli.py /workspace/Wan2GP/
 COPY download_model_cli.py /workspace/Wan2GP/
+COPY handler.py /workspace/Wan2GP/
+COPY runpod_serverless.py /workspace/Wan2GP/
 WORKDIR /workspace/Wan2GP
 RUN pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu124
 RUN pip install -r requirements.txt
