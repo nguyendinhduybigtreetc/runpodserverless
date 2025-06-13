@@ -174,9 +174,21 @@ def run_inference(wan_model, args):
         sys.exit(1)
 
     image_start = Image.open(image_path).convert('RGB')
+    orig_w, orig_h = image_start.size
+
+    if orig_w <= orig_h:  # ảnh dọc hoặc vuông
+        width = 480  # cạnh ngắn
+        height = int(orig_h * 480 / orig_w)
+    else:  # ảnh ngang
+        height = 480
+        width = int(orig_w * 480 / orig_h)
+    image_start = image_start.resize((width, height), Image.Resampling.LANCZOS)
     image_refs = [image_start]
 
-    width, height = 480, 640
+    # image_start = Image.open(image_path).convert('RGB')
+    # image_refs = [image_start]
+    #
+    # width, height = 480, 640
     seed = args.seed if args.seed != -1 else np.random.randint(0, 999999999)
     fps = 25
 

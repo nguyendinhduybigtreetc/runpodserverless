@@ -13,12 +13,14 @@ WORKDIR /workspace
 
 RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
 COPY run_avatar_cli.py /workspace/Wan2GP/
+COPY download_model_cli.py /workspace/Wan2GP/
 WORKDIR /workspace/Wan2GP
 RUN pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu124
 RUN pip install -r requirements.txt
 
 
 RUN pip install sageattention==1.0.6
+RUN python download_model_cli.py
 
 
 WORKDIR /workspace/Wan2GP
