@@ -18,6 +18,10 @@ from pathlib import Path
 TMP_DIR = "/tmp"
 SCRIPT = Path("python /workspace/Wan2GP/run_avatar_cli.py")  # đường dẫn cố định
 
+subprocess.run(
+    ["python", "/workspace/Wan2GP/download_model_cli.py"],
+    check=True
+)
 
 def _download(url: str, fname: str) -> str:
     """Tải url về /tmp rồi trả lại path."""
