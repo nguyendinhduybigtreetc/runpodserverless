@@ -15,53 +15,54 @@ import subprocess
 import requests
 from pathlib import Path
 
-TMP_DIR = "/tmp"
-SCRIPT = Path("python /runpod-volume/Wan2GP/run_avatar_cli.py")  # đường dẫn cố định
+# TMP_DIR = "/tmp"
+SCRIPT = Path("python run_avatar_cli.py")  # đường dẫn cố định
 
 subprocess.run(
-    ["python", "/runpod-volume/Wan2GP/download_model_cli.py"],
+    ["python", "download_model_cli.py"],
     check=True
 )
 
-def _download(url: str, fname: str) -> str:
-    """Tải url về /tmp rồi trả lại path."""
-    dst = Path(TMP_DIR) / fname
-    with requests.get(url, timeout=60, stream=True) as r:
-        r.raise_for_status()
-        with open(dst, "wb") as f:
-            for chunk in r.iter_content(8192):
-                f.write(chunk)
-    return str(dst)
+def _download(url: str, filename: str) -> str:
+    """
+    Tải thẳng về filename (ngay thư mục hiện hành) rồi trả lại tên file.
+    """
+    with open(filename, "wb") as f:
+        f.write(requests.get(url, timeout=30).content)
+    return filename          # chỉ cần relative path
 
 
 def handler(event):
     try:
         inp = event.get("input", {})
-        text = inp.get("text", "")
+        prompt = inp.get("text", "")
 
         # 1. Tải file từ URL (nếu có)
         img_path = _download(inp["image_url"], "input.png") if "image_url" in inp else None
         aud_path = _download(inp["audio_url"], "input.wav") if "audio_url" in inp else None
 
-        # 2. Gọi CLI (điều chỉnh arg tên tham số tuỳ file run_avatar_cli.py của bạn)
-        cmd = [sys.executable, str(SCRIPT), "--prompt", text]
-        if img_path:
-            cmd += [" --image ", img_path]
-        if aud_path:
-            cmd += [" --audio ", aud_path]
+
+        cmd = [
+            "python",  # Python interpreter hiện tại
+            "run_avatar_cli.py",  # File CLI cần chạy
+            "--image", "input.png",
+            "--audio", "input.wav",
+            "--prompt", prompt,
+        ]
         print(cmd)
-        completed = subprocess.run(
+        result = subprocess.run(
             cmd,
-            check=True,
-            capture_output=True,
-            text=True,
+            capture_output=True,  # lấy cả stdout và stderr
+            text=True,  # trả về str thay vì bytes
+            check=True  # tự động raise CalledProcessError nếu lỗi
         )
+        # return result.stdout
 
         # 3. Thử parse stdout thành JSON, không được thì trả raw string
         try:
-            result = json.loads(completed.stdout)
+            result = json.loads(result.stdout)
         except json.JSONDecodeError:
-            result = completed.stdout.strip()
+            result = result.stdout.strip()
 
         return {"result": result}
 
