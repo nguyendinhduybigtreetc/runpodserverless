@@ -16,9 +16,10 @@ ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 #COPY download_model_cli.py /workspace/Wan2GP/
 #COPY handler.py /workspace/Wan2GP/
 #COPY runpod_serverless.py /workspace/Wan2GP/
-WORKDIR /runpod-volume/Wan2GP
+WORKDIR /runpod-volume/Wan2GPCLI/Wan2GP
 RUN pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu124
-RUN pip install -r requirements.txt
+#RUN pip install -r requirements.txt
+RUN pip install torch>=2.4.0 torchvision>=0.19.0 opencv-python>=4.9.0.80 diffusers>=0.31.0 transformers==4.51.3 tokenizers>=0.20.3 accelerate>=1.1.1 tqdm imageio easydict ftfy dashscope imageio-ffmpeg gradio==5.23.0 numpy>=1.23.5,<2 einops moviepy==1.0.3 mmgp==3.4.8 peft==0.14.0 mutagen pydantic==2.10.6 decord onnxruntime-gpu rembg[gpu]==2.0.65 matplotlib timm segment-anything omegaconf hydra-core librosa loguru sentencepiece av
 RUN pip install runpod
 
 
