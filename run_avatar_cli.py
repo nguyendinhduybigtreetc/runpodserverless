@@ -22,6 +22,8 @@ import uuid, requests, pathlib
 ACCESS_KEY = "17e23633-2a7a-4d29-9450be4d6c8e-e01f-45f4"
 unique_key = uuid.uuid4().hex
 
+# runpod-volume
+
 
 # --- CÁC BIẾN TOÀN CỤC ---
 bfloat16_supported = torch.cuda.get_device_capability()[0] >= 8
