@@ -9,14 +9,14 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=$CUDA_HOME/bin:$PATH
 ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
 
-WORKDIR /workspace
+#WORKDIR /workspace
 
-RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
-COPY run_avatar_cli.py /workspace/Wan2GP/
-COPY download_model_cli.py /workspace/Wan2GP/
-COPY handler.py /workspace/Wan2GP/
-COPY runpod_serverless.py /workspace/Wan2GP/
-WORKDIR /workspace/Wan2GP
+#RUN git clone https://github.com/deepbeepmeep/Wan2GP.git
+#COPY run_avatar_cli.py /workspace/Wan2GP/
+#COPY download_model_cli.py /workspace/Wan2GP/
+#COPY handler.py /workspace/Wan2GP/
+#COPY runpod_serverless.py /workspace/Wan2GP/
+WORKDIR /runpod-volume/Wan2GP
 RUN pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/test/cu124
 RUN pip install -r requirements.txt
 RUN pip install runpod
@@ -26,7 +26,7 @@ RUN pip install sageattention==1.0.6
 #RUN python download_model_cli.py
 
 
-WORKDIR /workspace/Wan2GP
+#WORKDIR /runpod-volume/Wan2GPCLI
 
 
 CMD ["python", "runpod_serverless.py"]

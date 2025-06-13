@@ -16,10 +16,10 @@ import requests
 from pathlib import Path
 
 TMP_DIR = "/tmp"
-SCRIPT = Path("python /workspace/Wan2GP/run_avatar_cli.py")  # đường dẫn cố định
+SCRIPT = Path("python /runpod-volume/Wan2GP/run_avatar_cli.py")  # đường dẫn cố định
 
 subprocess.run(
-    ["python", "/workspace/Wan2GP/download_model_cli.py"],
+    ["python", "/runpod-volume/Wan2GP/download_model_cli.py"],
     check=True
 )
 
@@ -46,10 +46,10 @@ def handler(event):
         # 2. Gọi CLI (điều chỉnh arg tên tham số tuỳ file run_avatar_cli.py của bạn)
         cmd = [sys.executable, str(SCRIPT), "--prompt", text]
         if img_path:
-            cmd += ["--image", img_path]
+            cmd += [" --image ", img_path]
         if aud_path:
-            cmd += ["--audio", aud_path]
-
+            cmd += [" --audio ", aud_path]
+        print(cmd)
         completed = subprocess.run(
             cmd,
             check=True,
