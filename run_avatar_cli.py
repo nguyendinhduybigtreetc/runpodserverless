@@ -294,7 +294,7 @@ def run_inference(wan_model, args):
                 timeout=1200  # tăng timeout nếu file lớn
             )
         # print(r.status_code, r.text)
-        print("CDN URL:", f"https://zockto.b-cdn.net/video/{unique_key}.mp4")
+        print("CDN URL:", f"https://zockto.b-cdn.net/video/{base_filename}.mp4")
 
 
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -338,7 +338,7 @@ def main():
 
     # --- TeaCache Arguments ---
     teacache_group = parser.add_argument_group('TeaCache Arguments')
-    teacache_group.add_argument("--teacache", type=float, default=0,
+    teacache_group.add_argument("--teacache", type=float, default=25,
                                 help="Enable TeaCache with a multiplier (0 to disable).")
     teacache_group.add_argument("--teacache_start_perc", type=int, default=25,
                                 help="Start TeaCache after this percentage of steps.")

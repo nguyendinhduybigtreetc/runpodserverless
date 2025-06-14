@@ -9,13 +9,14 @@ Handler RunPod Serverless:
 """
 
 import os
+import re
 import sys
 import json
 import subprocess
 import requests
 from pathlib import Path
 
-# TMP_DIR = "/tmp"
+TMP_DIR = "/tmp"
 SCRIPT = Path("python run_avatar_cli.py")  # đường dẫn cố định
 
 subprocess.run(
@@ -23,19 +24,21 @@ subprocess.run(
     check=True
 )
 
-def _download(url: str, filename: str) -> str:
-    """
-    Tải thẳng về filename (ngay thư mục hiện hành) rồi trả lại tên file.
-    """
-    with open(filename, "wb") as f:
-        f.write(requests.get(url, timeout=30).content)
-    return filename          # chỉ cần relative path
+def _download(url: str, fname: str) -> str:
+    """Tải url về /tmp rồi trả lại path."""
+    dst = Path(TMP_DIR) / fname
+    with requests.get(url, timeout=60, stream=True) as r:
+        r.raise_for_status()
+        with open(dst, "wb") as f:
+            for chunk in r.iter_content(8192):
+                f.write(chunk)
+    return str(dst)
 
 
 def handler(event):
     try:
         inp = event.get("input", {})
-        prompt = inp.get("text", "")
+        prompt = inp.get("prompt", "")
 
         # 1. Tải file từ URL (nếu có)
         img_path = _download(inp["image_url"], "input.png") if "image_url" in inp else None
@@ -63,14 +66,19 @@ def handler(event):
             result = json.loads(result.stdout)
         except json.JSONDecodeError:
             result = result.stdout.strip()
-
-        return {"result": result}
+        match = re.search(r"CDN URL:\s*(https?://[^\s]+)", result.stdout)
+        if match:
+            return {"cdn_url": match.group(1)}
+        else:
+            return {"error": "CDN URL not found", "raw_output": result.stdout}
+        # return {"result": result}
 
     except subprocess.CalledProcessError as e:
         return {
             "error": "run_avatar_cli.py exited with non-zero code",
             "code":  e.returncode,
-            "stderr": e.stderr.strip(),
+            "stdout": e.stdout,      # thêm dòng này
+            "stderr": e.stderr,      # và giữ stderr
         }
     except Exception as e:
         return {"error": str(e)}
